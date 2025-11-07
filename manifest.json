@@ -1,0 +1,18 @@
+{
+  "name": "Мисливські Сигнали",
+  "short_name": "Сигнали",
+  "description": "Додаток для прослуховування аудіо та перегляд відео на тематику мисливської сигнальної музики. Обирайте категорію, слухайте сигнали, дивіться відео та дізнавайтесь більше.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#2a1a0e",
+  "theme_color": "#2a1a0e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}
