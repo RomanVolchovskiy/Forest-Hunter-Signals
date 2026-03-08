@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:hunting_signals/models/hunting_models.dart';
+
+class HuntingDataService {
+  static Future<List<SignalCategory>> getCategories() async {
+    return [
+      SignalCategory(
+        id: '1',
+        name: 'Інформаційні',
+        description: 'Сигнали для передачі інформації',
+        icon: 'info',
+        color: Colors.blue,
+      ),
+      SignalCategory(
+        id: '2',
+        name: 'Організаційні',
+        description: 'Сигнали для організації мисливства',
+        icon: 'organization',
+        color: Colors.green,
+      ),
+      SignalCategory(
+        id: '3',
+        name: 'Сигнали покоту',
+        description: 'Сигнали для полювання з гончими',
+        icon: 'hunt',
+        color: Colors.orange,
+      ),
+      SignalCategory(
+        id: '4',
+        name: 'Святкові',
+        description: 'Сигнали для святкових подій',
+        icon: 'celebration',
+        color: Colors.purple,
+      ),
+      SignalCategory(
+        id: '5',
+        name: 'Довільна програма',
+        description: 'Сигнали для вільного виконання',
+        icon: 'custom',
+        color: Colors.teal,
+      ),
+    ];
+  }
+
+  static Future<List<HuntingSignal>> getAllSignals() async {
+    return [
+      HuntingSignal(
+        id: '1',
+        name: 'Сигнал збору',
+        description: 'Сигнал для збору мисливців перед початком полювання',
+        category: 'Інформаційні',
+        audioUrl: 'https://example.com/signals/gathering.mp3',
+        duration: 15,
+      ),
+      HuntingSignal(
+        id: '2',
+        name: 'Сигнал початку',
+        description: 'Сигнал для початку мисливського заходу',
+        category: 'Організаційні',
+        audioUrl: 'https://example.com/signals/start.mp3',
+        duration: 12,
+      ),
+      HuntingSignal(
+        id: '3',
+        name: 'Сигнал покоту',
+        description: 'Сигнал для початку полювання з гончими',
+        category: 'Сигнали покоту',
+        audioUrl: 'https://example.com/signals/hunt.mp3',
+        duration: 20,
+      ),
+      HuntingSignal(
+        id: '4',
+        name: 'Святковий марш',
+        description: 'Сигнал для святкових мисливських подій',
+        category: 'Святкові',
+        audioUrl: 'https://example.com/signals/celebration.mp3',
+        duration: 25,
+      ),
+      HuntingSignal(
+        id: '5',
+        name: 'Довільна мелодія',
+        description: 'Сигнал для вільного виконання',
+        category: 'Довільна програма',
+        audioUrl: 'https://example.com/signals/custom.mp3',
+        duration: 18,
+      ),
+    ];
+  }
+
+  static Future<List<HuntingSignal>> getSignalsByCategory(String category) async {
+    final allSignals = await getAllSignals();
+    return allSignals.where((signal) => signal.category == category).toList();
+  }
+}
