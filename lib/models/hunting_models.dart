@@ -5,7 +5,7 @@ class HuntingSignal {
   final String name;
   final String description;
   final String category;
-  final String audioUrl;
+  final String? audioUrl;
   final String? videoUrl;
   final String? notationUrl;
   final String? imageUrl;
@@ -20,7 +20,7 @@ class HuntingSignal {
     required this.name,
     required this.description,
     required this.category,
-    required this.audioUrl,
+    this.audioUrl,
     this.videoUrl,
     this.notationUrl,
     this.imageUrl,
@@ -107,27 +107,31 @@ class HuntingEvent {
   });
 }
 
-class EducationalMaterial {
+class EducationMaterial {
   final String id;
   final String title;
   final String description;
+  final EducationType type;
   final String content;
-  final String? imagePath;
-  final String? videoPath;
-  final String? audioPath;
+  final String? videoUrl;
+  final String? imageUrl;
   final String category;
-  final Duration? duration;
+  final DifficultyLevel difficulty;
+  final List<String> tags;
+  final DateTime createdAt;
 
-  EducationalMaterial({
+  EducationMaterial({
     required this.id,
     required this.title,
     required this.description,
+    required this.type,
     required this.content,
-    this.imagePath,
-    this.videoPath,
-    this.audioPath,
+    this.videoUrl,
+    this.imageUrl,
     required this.category,
-    this.duration,
+    required this.difficulty,
+    required this.tags,
+    required this.createdAt,
   });
 }
 
@@ -147,4 +151,17 @@ class Playlist {
     required this.signalIds,
     this.isDefault = false,
   });
+}
+
+enum EducationType {
+  article,
+  video,
+  audio,
+  interactive,
+}
+
+enum DifficultyLevel {
+  beginner,
+  intermediate,
+  advanced,
 }

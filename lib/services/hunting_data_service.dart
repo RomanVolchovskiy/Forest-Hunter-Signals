@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:hunting_signals/models/hunting_models.dart';
+import 'package:hunting_signals/services/data_persistence_service.dart';
 
 class HuntingDataService {
+  static List<HuntingSignal> _signals = [];
+  static List<EducationMaterial> _educationMaterials = [];
+
+  // Initialize persisted data
+  static Future<void> loadPersistedData() async {
+    final loadedSignals = await DataPersistenceService.loadSignals();
+    if (loadedSignals.isNotEmpty) {
+      _signals = loadedSignals;
+    }
+
+    final loadedMaterials = await DataPersistenceService.loadEducationMaterials();
+    if (loadedMaterials.isNotEmpty) {
+      _educationMaterials = loadedMaterials;
+    }
+  }
+
   static Future<List<SignalCategory>> getCategories() async {
     return [
       SignalCategory(
@@ -43,48 +60,92 @@ class HuntingDataService {
   }
 
   static Future<List<HuntingSignal>> getAllSignals() async {
-    return [
-      HuntingSignal(
-        id: '1',
-        name: 'Сигнал збору',
-        description: 'Сигнал для збору мисливців перед початком полювання',
-        category: 'Інформаційні',
-        audioUrl: 'https://example.com/signals/gathering.mp3',
-        duration: 15,
-      ),
-      HuntingSignal(
-        id: '2',
-        name: 'Сигнал початку',
-        description: 'Сигнал для початку мисливського заходу',
-        category: 'Організаційні',
-        audioUrl: 'https://example.com/signals/start.mp3',
-        duration: 12,
-      ),
-      HuntingSignal(
-        id: '3',
-        name: 'Сигнал покоту',
-        description: 'Сигнал для початку полювання з гончими',
-        category: 'Сигнали покоту',
-        audioUrl: 'https://example.com/signals/hunt.mp3',
-        duration: 20,
-      ),
-      HuntingSignal(
-        id: '4',
-        name: 'Святковий марш',
-        description: 'Сигнал для святкових мисливських подій',
-        category: 'Святкові',
-        audioUrl: 'https://example.com/signals/celebration.mp3',
-        duration: 25,
-      ),
-      HuntingSignal(
-        id: '5',
-        name: 'Довільна мелодія',
-        description: 'Сигнал для вільного виконання',
-        category: 'Довільна програма',
-        audioUrl: 'https://example.com/signals/custom.mp3',
-        duration: 18,
-      ),
-    ];
+    if (_signals.isEmpty) {
+      _signals = [
+        HuntingSignal(
+          id: '1',
+          name: 'Сигнал збору',
+          description: 'Сигнал для збору мисливців перед початком полювання',
+          category: 'Інформаційні',
+          audioUrl: 'https://example.com/signals/gathering.mp3',
+          duration: 15,
+        ),
+        HuntingSignal(
+          id: '2',
+          name: 'Сигнал початку',
+          description: 'Сигнал для початку мисливського заходу',
+          category: 'Організаційні',
+          audioUrl: 'https://example.com/signals/start.mp3',
+          duration: 12,
+        ),
+        HuntingSignal(
+          id: '3',
+          name: 'Сигнал покоту',
+          description: 'Сигнал для початку полювання з гончими',
+          category: 'Сигнали покоту',
+          audioUrl: 'https://example.com/signals/hunt.mp3',
+          duration: 20,
+        ),
+        HuntingSignal(
+          id: '4',
+          name: 'Святковий марш',
+          description: 'Сигнал для святкових мисливських подій',
+          category: 'Святкові',
+          audioUrl: 'https://example.com/signals/celebration.mp3',
+          duration: 25,
+        ),
+        HuntingSignal(
+          id: '5',
+          name: 'Довільна мелодія',
+          description: 'Сигнал для вільного виконання',
+          category: 'Довільна програма',
+          audioUrl: 'https://example.com/signals/custom.mp3',
+          duration: 18,
+        ),
+      ];
+    }
+    return _signals;
+  }
+
+  static void addSignal(HuntingSignal signal) {
+    _signals.add(signal);
+    DataPersistenceService.saveSignals(_signals);
+  }
+
+  static void addEducationMaterial(EducationMaterial material) {
+    _educationMaterials.add(material);
+    DataPersistenceService.saveEducationMaterials(_educationMaterials);
+  }
+
+  static Future<List<EducationMaterial>> getEducationMaterials() async {
+    if (_educationMaterials.isEmpty) {
+      _educationMaterials = [
+        EducationMaterial(
+          id: 'edu_001',
+          title: 'Як читати мисливські ноти',
+          description: 'Повний посібник з читання мисливських нот',
+          type: EducationType.article,
+          content: 'Детальна інструкція про те, як читати мисливські ноти...',
+          category: 'Нотна грамота',
+          difficulty: DifficultyLevel.beginner,
+          tags: ['ноти', 'грамота', 'основи'],
+          createdAt: DateTime.now(),
+        ),
+        EducationMaterial(
+          id: 'edu_002',
+          title: 'Основи мисливської сигнальної музики',
+          description: 'Вступ до мисливської сигнальної музики',
+          type: EducationType.video,
+          content: 'Відео урок про основи мисливської сигнальної музики...',
+          videoUrl: 'assets/video/basic_signals.mp4',
+          category: 'Теорія',
+          difficulty: DifficultyLevel.beginner,
+          tags: ['теорія', 'основи', 'сигнали'],
+          createdAt: DateTime.now(),
+        ),
+      ];
+    }
+    return _educationMaterials;
   }
 
   static Future<List<HuntingSignal>> getSignalsByCategory(String category) async {

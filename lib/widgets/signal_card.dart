@@ -42,10 +42,12 @@ class _SignalCardState extends State<SignalCard> {
       });
     } else {
       try {
-        await _audioService.play(widget.signal.audioUrl);
-        setState(() {
-          _isPlaying = true;
-        });
+        if (widget.signal.audioUrl != null) {
+          await _audioService.play(widget.signal.audioUrl!);
+          setState(() {
+            _isPlaying = true;
+          });
+        }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

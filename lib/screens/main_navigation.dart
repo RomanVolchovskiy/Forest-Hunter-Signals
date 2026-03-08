@@ -4,6 +4,7 @@ import 'package:hunting_signals/screens/events_screen.dart';
 import 'package:hunting_signals/screens/education_screen.dart';
 import 'package:hunting_signals/screens/favorites_screen.dart';
 import 'package:hunting_signals/theme/hunting_theme.dart';
+import 'package:hunting_signals/services/admin_service.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -43,6 +44,15 @@ class _MainNavigationState extends State<MainNavigation> {
         centerTitle: true,
         elevation: 4,
         shadowColor: HuntingTheme.primaryDark.withValues(alpha: 0.3),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.admin_panel_settings),
+            onPressed: () {
+              AdminService.showAdminLoginDialog(context);
+            },
+            tooltip: 'Адміністратор',
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
