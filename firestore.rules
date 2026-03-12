@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Signals ────────────────────────────────────────────────────
+    match /signals/{signalId} {
+      // Усі автентифіковані (або анонімні) користувачі можуть читати
+      allow read: if true;
+      // Лише адмін може писати (перевіряти через Firebase Auth + Custom Claims,
+      // або залишити відкритим на час розробки)
+      allow write: if request.auth != null;
+    }
+
+    // ── Education Materials ────────────────────────────────────────
+    match /education/{materialId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ── Categories ────────────────────────────────────────────────
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ── Events ────────────────────────────────────────────────────
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

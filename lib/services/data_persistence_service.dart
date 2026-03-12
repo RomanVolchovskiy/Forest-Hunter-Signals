@@ -2,132 +2,136 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hunting_signals/models/hunting_models.dart';
 
+/// ──────────────────────────────────────────────────────────────────────────
+/// DataPersistenceService — локальний офлайн-кеш на основі SharedPreferences.
+///
+/// Використовується як РЕЗЕРВНЕ сховище, коли немає доступу до Firestore.
+/// Основне сховище — Cloud Firestore (firebase_service.dart).
+/// ──────────────────────────────────────────────────────────────────────────
 class DataPersistenceService {
-  static const String _signalsKey = 'admin_signals';
-  static const String _educationMaterialsKey = 'admin_education_materials';
+  static const String _signalsKey = 'cached_signals';
+  static const String _educationMaterialsKey = 'cached_education_materials';
 
-  // Save signals to SharedPreferences
+  // ─── Signals ──────────────────────────────────────────────────────────────
+
   static Future<void> saveSignals(List<HuntingSignal> signals) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final signalsJson = signals.map((signal) => {
-        'id': signal.id,
-        'name': signal.name,
-        'description': signal.description,
-        'category': signal.category,
-        'audioUrl': signal.audioUrl,
-        'videoUrl': signal.videoUrl,
-        'notationUrl': signal.notationUrl,
-        'imageUrl': signal.imageUrl,
-        'duration': signal.duration,
-        'tags': signal.tags,
-        'historicalInfo': signal.historicalInfo,
-        'usageInstructions': signal.usageInstructions,
-        'isFavorite': signal.isFavorite,
-      }).toList();
-      
-      await prefs.setString(_signalsKey, jsonEncode(signalsJson));
-    } catch (e) {
-      // Handle error silently
-    }
+      final json = jsonEncode(signals
+          .map((s) => {
+                'id': s.id,
+                'name': s.name,
+                'description': s.description,
+                'category': s.category,
+                'audioUrl': s.audioUrl,
+                'videoUrl': s.videoUrl,
+                'notationUrl': s.notationUrl,
+                'imageUrl': s.imageUrl,
+                'duration': s.duration,
+                'tags': s.tags,
+                'historicalInfo': s.historicalInfo,
+                'usageInstructions': s.usageInstructions,
+                'isFavorite': s.isFavorite,
+              })
+          .toList());
+      await prefs.setString(_signalsKey, json);
+    } catch (_) {}
   }
 
-  // Load signals from SharedPreferences
   static Future<List<HuntingSignal>> loadSignals() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final signalsString = prefs.getString(_signalsKey);
-      
-      if (signalsString != null) {
-        final List<dynamic> signalsJson = jsonDecode(signalsString);
-        return signalsJson.map((json) => HuntingSignal(
-          id: json['id'],
-          name: json['name'],
-          description: json['description'],
-          category: json['category'],
-          audioUrl: json['audioUrl'],
-          videoUrl: json['videoUrl'],
-          notationUrl: json['notationUrl'],
-          imageUrl: json['imageUrl'],
-          duration: json['duration'] ?? 30,
-          tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
-          historicalInfo: json['historicalInfo'],
-          usageInstructions: json['usageInstructions'],
-          isFavorite: json['isFavorite'] ?? false,
-        )).toList();
+      final str = prefs.getString(_signalsKey);
+      if (str != null) {
+        final list = jsonDecode(str) as List<dynamic>;
+        return list
+            .map((j) => HuntingSignal(
+                  id: j['id'],
+                  name: j['name'],
+                  description: j['description'],
+                  category: j['category'],
+                  audioUrl: j['audioUrl'],
+                  videoUrl: j['videoUrl'],
+                  notationUrl: j['notationUrl'],
+                  imageUrl: j['imageUrl'],
+                  duration: j['duration'] ?? 30,
+                  tags: j['tags'] != null
+                      ? List<String>.from(j['tags'])
+                      : null,
+                  historicalInfo: j['historicalInfo'],
+                  usageInstructions: j['usageInstructions'],
+                  isFavorite: j['isFavorite'] ?? false,
+                ))
+            .toList();
       }
-    } catch (e) {
-      // Handle error silently
-    }
+    } catch (_) {}
     return [];
   }
 
-  // Save education materials to SharedPreferences
-  static Future<void> saveEducationMaterials(List<EducationMaterial> materials) async {
+  // ─── Education Materials ──────────────────────────────────────────────────
+
+  static Future<void> saveEducationMaterials(
+      List<EducationMaterial> materials) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final materialsJson = materials.map((material) => {
-        'id': material.id,
-        'title': material.title,
-        'description': material.description,
-        'type': material.type.name,
-        'content': material.content,
-        'videoUrl': material.videoUrl,
-        'imageUrl': material.imageUrl,
-        'category': material.category,
-        'difficulty': material.difficulty.name,
-        'tags': material.tags,
-        'createdAt': material.createdAt.toIso8601String(),
-      }).toList();
-      
-      await prefs.setString(_educationMaterialsKey, jsonEncode(materialsJson));
-    } catch (e) {
-      // Handle error silently
-    }
+      final json = jsonEncode(materials
+          .map((m) => {
+                'id': m.id,
+                'title': m.title,
+                'description': m.description,
+                'type': m.type.name,
+                'content': m.content,
+                'videoUrl': m.videoUrl,
+                'imageUrl': m.imageUrl,
+                'category': m.category,
+                'difficulty': m.difficulty.name,
+                'tags': m.tags,
+                'createdAt': m.createdAt.toIso8601String(),
+              })
+          .toList());
+      await prefs.setString(_educationMaterialsKey, json);
+    } catch (_) {}
   }
 
-  // Load education materials from SharedPreferences
   static Future<List<EducationMaterial>> loadEducationMaterials() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final materialsString = prefs.getString(_educationMaterialsKey);
-      
-      if (materialsString != null) {
-        final List<dynamic> materialsJson = jsonDecode(materialsString);
-        return materialsJson.map((json) => EducationMaterial(
-          id: json['id'],
-          title: json['title'],
-          description: json['description'],
-          type: EducationType.values.firstWhere(
-            (e) => e.name == json['type'],
-            orElse: () => EducationType.article,
-          ),
-          content: json['content'],
-          videoUrl: json['videoUrl'],
-          imageUrl: json['imageUrl'],
-          category: json['category'],
-          difficulty: DifficultyLevel.values.firstWhere(
-            (e) => e.name == json['difficulty'],
-            orElse: () => DifficultyLevel.beginner,
-          ),
-          tags: List<String>.from(json['tags'] ?? []),
-          createdAt: DateTime.parse(json['createdAt']),
-        )).toList();
+      final str = prefs.getString(_educationMaterialsKey);
+      if (str != null) {
+        final list = jsonDecode(str) as List<dynamic>;
+        return list
+            .map((j) => EducationMaterial(
+                  id: j['id'],
+                  title: j['title'],
+                  description: j['description'],
+                  type: EducationType.values.firstWhere(
+                    (e) => e.name == j['type'],
+                    orElse: () => EducationType.article,
+                  ),
+                  content: j['content'],
+                  videoUrl: j['videoUrl'],
+                  imageUrl: j['imageUrl'],
+                  category: j['category'],
+                  difficulty: DifficultyLevel.values.firstWhere(
+                    (e) => e.name == j['difficulty'],
+                    orElse: () => DifficultyLevel.beginner,
+                  ),
+                  tags: List<String>.from(j['tags'] ?? []),
+                  createdAt: DateTime.parse(j['createdAt']),
+                ))
+            .toList();
       }
-    } catch (e) {
-      // Handle error silently
-    }
+    } catch (_) {}
     return [];
   }
 
-  // Clear all saved data
+  // ─── Очистити кеш ─────────────────────────────────────────────────────────
+
   static Future<void> clearAllData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_signalsKey);
       await prefs.remove(_educationMaterialsKey);
-    } catch (e) {
-      // Handle error silently
-    }
+    } catch (_) {}
   }
 }
